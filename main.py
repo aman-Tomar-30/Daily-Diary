@@ -69,9 +69,13 @@ def read_diary(filename=f"Entries/{todays_date}.txt"):
             data = f.read()
 
         decrypted = decrypt_text(data)
-        print("\n📖 Your Diary:\n")
-        print(decrypted)
-
+        print("\n📖 Your Diary:")
+        lines = decrypted.split("\n")
+        for line in lines:
+            formatted_lines = format_text(line)
+            for formatted_line in formatted_lines:
+                print(formatted_line)
+                
     except Exception:
         print("❌ Unable to decrypt diary (wrong key or corrupted file)")
 
@@ -101,7 +105,11 @@ if choice == "1":
     print("💾 Encrypted diary saved!")
 
 elif choice == "2":
-    read_diary()
+    date = input("Enter date (DD-MM-YYYY) or press ENTER for today: ")
+    if date:
+        read_diary(f"Entries/{date}.txt")
+    else:
+        read_diary()
 
 
 
