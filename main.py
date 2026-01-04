@@ -5,7 +5,7 @@ from cryptography.fernet import Fernet
 
 todays_date = datetime.now().strftime("%d-%m-%Y")
 
-while True:
+if __name__ == "__main__":
     # ---------- Verify Password ----------
     def verify_password():
         pwd = getpass("🔐 Enter diary password: ")
@@ -111,8 +111,6 @@ while True:
         if date:
             if read_diary(f"Entries/{date}.txt"):
                 read_diary(f"Entries/{date}.txt")
-            else:
-                print("❌ No entry found for this date.")
         else:
             read_diary()
     
