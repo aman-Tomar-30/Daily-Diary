@@ -114,9 +114,6 @@ if __name__ == "__main__":
         else:
             read_diary()
     
-    elif choice == "3":
-        print("👋 Goodbye!")
-        exit()
 
 
 
