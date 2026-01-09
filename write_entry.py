@@ -9,12 +9,19 @@ def write_entry(user_id, content):
     print("✅ Diary entry saved successfully!")
     
 def read_entries(user_id):
-    cursor.execute(f"SELECT content FROM entries WHERE user_id = ?", (user_id,))
+    create_date = input("Enter date (YYYY-MM-DD) or press ENTER for all entries: ")
+    if create_date:
+        cursor.execute(f"SELECT content, created_at FROM entries WHERE user_id = ? AND DATE(created_at) = ?", (user_id, create_date))
+    else:
+        cursor.execute(f"SELECT content FROM entries WHERE user_id = ?", (user_id,))
     entries = cursor.fetchall()
+    #print(entries)
     if entries:
-        print("\n📖 Your Diary Entries:\n")
-        for entry in entries:
-            print(entry[0])
+        print("📖 Your Diary Entries:\n")
+        for content,created_at in entries:
+            print(f"--- {created_at} ---\n")
+            print(content)
+            print("\n")
     else:
         print("No diary entries found.")
 
