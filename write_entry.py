@@ -1,5 +1,6 @@
 import sqlite3
 from getpass import getpass
+import hashlib
 
 connection = sqlite3.connect("example.db")
 cursor = connection.cursor()
@@ -27,15 +28,33 @@ def read_entries(user_id):
 
 def new_user():
     username = input("Choose a username: ")
-    password = getpass("Choose a password: ")
-    cursor.execute(f"INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+    try:
+        cursor.execute(f"SELECT id FROM users WHERE username = ?", (username,))
+        if cursor.fetchone():
+            print("❌ Username already exists.")
+            return
+        password = getpass("Choose a password: ")
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        cursor.execute(f"INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+    except sqlite3.IntegrityError:
+        print("❌ Username already exists.")
+        return
     connection.commit()
     print("✅ User created successfully!")
     
 def verify_user():
     username = input("Username: ")
+    try:
+        cursor.execute(f"SELECT id FROM users WHERE username = ?", (username,))
+        if not cursor.fetchone():
+            print("❌ Username does not exist.")
+            return None         
+    except sqlite3.IntegrityError:
+        print("❌ Username does not exist.")
+        return None
     password = getpass("Password: ")
-    cursor.execute(f"SELECT id FROM users WHERE username = ? AND password = ?", (username, password))
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    cursor.execute(f"SELECT id FROM users WHERE username = ? AND password = ?", (username, hashed_password))
     result = cursor.fetchone()
     if result:
         print("✅ Access granted")
@@ -71,7 +90,7 @@ if __name__ == "__main__":
         print("\nWrite diary (ENTER twice to finish):")
         lines = []
         while True:
-            line = input()
+            line = input() 
             if line == "":
                 break
             lines.append(line)
